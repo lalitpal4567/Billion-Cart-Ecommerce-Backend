@@ -1,0 +1,27 @@
+package com.bigcart.bigcartapp.mapper;
+
+import com.bigcart.bigcartapp.model.Subcategory;
+import com.bigcart.bigcartapp.payload.SubcategoryRequest;
+import javax.annotation.processing.Generated;
+
+@Generated(
+    value = "org.mapstruct.ap.MappingProcessor",
+    date = "2024-07-14T21:35:09+0530",
+    comments = "version: 1.5.5.Final, compiler: Eclipse JDT (IDE) 3.37.0.v20240215-1558, environment: Java 17.0.10 (Eclipse Adoptium)"
+)
+public class SubcategoryMapperImpl implements SubcategoryMapper {
+
+    @Override
+    public Subcategory toEntity(SubcategoryRequest request) {
+        if ( request == null ) {
+            return null;
+        }
+
+        Subcategory subcategory = new Subcategory();
+
+        subcategory.setDescription( request.getDescription() );
+        subcategory.setName( request.getName() );
+
+        return subcategory;
+    }
+}
