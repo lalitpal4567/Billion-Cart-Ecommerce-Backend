@@ -26,8 +26,14 @@ public interface SubcategoryService {
 	List<SubcategoryImage> getAllSubcategoryImages(Long subcategoryId);
 	
 	void removeSubcategoryImageById(Long imageId);
-	
+		
 	Page<SubcategoryResponse> getAllSubcategories(Integer page, Integer size);
+	
+	List<SubcategoryResponse> getActiveSubcategoriesByCategoryId(Long categoryId);
+	
+	void changeSubcategoryActiveStatus(Long subcategoryId);
+	
+	void changeSubcategoryImageActiveStatus(Long imageId);
 	
 	Page<SubcategoryResponse> getSubcategoriesByCategoryId(Integer page, Integer size, Long categoryId);
 	

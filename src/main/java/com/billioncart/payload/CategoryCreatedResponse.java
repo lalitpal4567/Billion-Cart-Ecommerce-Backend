@@ -5,8 +5,9 @@ import java.util.List;
 import lombok.Data;
 
 @Data
-public class CategoryRequest {
+public class CategoryCreatedResponse {
+	private Long categoryId;
 	private String name;
 	private String description;
-	private List<ImageAltText> altTexts;
+	private List<ImageResponse> images;
 }

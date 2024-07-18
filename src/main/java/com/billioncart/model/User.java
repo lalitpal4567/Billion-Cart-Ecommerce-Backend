@@ -1,5 +1,6 @@
 package com.billioncart.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.billioncart.audit.DateAudit;
@@ -45,7 +46,7 @@ public class User extends DateAudit{
 	
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
 	@JsonIgnore
-	private List<Review> reviews;
+	private List<Review> reviews = new ArrayList<>();
 	
 	@OneToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "cart_id")
@@ -59,6 +60,6 @@ public class User extends DateAudit{
 	
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
 	@JsonIgnore
-	private List<Address> addresses;
+	private List<Address> addresses = new ArrayList<>();
 	
 }

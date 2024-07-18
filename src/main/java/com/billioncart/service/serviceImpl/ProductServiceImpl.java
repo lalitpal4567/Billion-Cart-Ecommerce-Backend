@@ -90,9 +90,10 @@ public class ProductServiceImpl implements ProductService {
 
 	@Autowired
 	private BrandRepository brandRepository;
-
+	
 	@Autowired
-	private AmazonS3 amazonS3;
+	private S3Bucket s3Bucket;
+	
 
 	@Override
 	@Transactional
@@ -114,7 +115,7 @@ public class ProductServiceImpl implements ProductService {
 		List<ProductImage> productImages = imageFileWithMetadatas.stream().map(image -> {
 			String generatedImageUrl;
 			try {
-				generatedImageUrl = uploadImageToS3(image.getImageFile());
+				generatedImageUrl = s3Bucket.uploadImageToS3(image.getImageFile(), "product-images/");
 			} catch (IOException e) {
 				throw new ImageUploadException("Failed to upload image.");
 			}
@@ -122,6 +123,7 @@ public class ProductServiceImpl implements ProductService {
 			productImage.setImageUrl(generatedImageUrl);
 			productImage.setAltText(image.getAltText());
 			productImage.setProduct(newProduct);
+			productImage.setActive(true);
 			return productImage;
 
 		}).collect(Collectors.toList());
@@ -138,27 +140,13 @@ public class ProductServiceImpl implements ProductService {
 		newProduct.setSpecificationValues(specificationValues);
 		newProduct.setBrand(existingBrand);
 		newProduct.setColor(existingColor);
-
+		newProduct.setActive(true);
+		
 		Product createdProduct = productRepository.save(newProduct);
 		return getProductResponse(createdProduct);
 	}
 
-	private String uploadImageToS3(MultipartFile imageFile) throws IOException {
-		String bucketName = "billion-cart-bucket";
-
-		String uniqueID = UUID.randomUUID().toString();
-		String fileName = "product-images/" + uniqueID + imageFile.getOriginalFilename();
-		String cloudFrontDomainName = "https://d3jxj5kmew5ec.cloudfront.net";
-
-		ObjectMetadata metadata = new ObjectMetadata();
-		metadata.setContentType(imageFile.getContentType());
-		metadata.setContentLength(imageFile.getSize());
-
-		amazonS3.putObject(new PutObjectRequest(bucketName, fileName, imageFile.getInputStream(), metadata));
-		String cloudFrontUrl = cloudFrontDomainName + "/" + fileName;
-		return cloudFrontUrl;
-	}
-
+	
 	public static List<SpecificationResponse> getSpecificationResponses(Product createdProduct) {
 		List<SpecificationValue> createdSpecificationValues = createdProduct.getSpecificationValues();
 		return createdSpecificationValues.stream().map(spec -> {
@@ -190,7 +178,7 @@ public class ProductServiceImpl implements ProductService {
 		productRepository.deleteById(productId);
 	}
 
-	public ProductResponse getProductResponse(Product product) {
+	private ProductResponse getProductResponse(Product product) {
 		CategoryMiniDetailsResponse categoryMiniDetailsResponse = CategoryMiniDetailsResponseMapper.INSTANCE
 				.toPayload(product.getSubcategory().getCategory());
 		SubcategoryMiniDetailsResponse subcategoryMiniDetailsResponse = SubcategoryMiniDetailsResponseMapper.INSTANCE
@@ -221,7 +209,7 @@ public class ProductServiceImpl implements ProductService {
 		return productResponse;
 	}
 
-	public static List<ProductImageResponse> getImageResponse(Product product) {
+	private List<ProductImageResponse> getImageResponse(Product product) {
 		List<ProductImage> productImages = product.getProductImages();
 		List<ProductImageResponse> productImageResponses = productImages.stream().map(img -> {
 			ProductImageResponse productImageResponse = ProductImageResponseMapper.INSTANCE.toPayload(img);
@@ -291,7 +279,7 @@ public class ProductServiceImpl implements ProductService {
 		List<ProductImage> productImages = imageFileWithMetadatas.stream().map(image ->{
 			String generatedImageUrl;
 			try {
-				generatedImageUrl = uploadImageToS3(image.getImageFile());
+				generatedImageUrl = s3Bucket.uploadImageToS3(image.getImageFile(), "product-images/");
 			} catch (IOException e) {
 				throw new ImageUploadException("Failed to upload image.");
 			}
@@ -305,13 +293,15 @@ public class ProductServiceImpl implements ProductService {
 		return productImageRepository.saveAll(productImages);
 	}
 	
-	@Transactional
+	
 	@Override
+	@Transactional
 	public ProductResponse updateProduct(Long productId, ProductRequest request) {
 		Product existingProduct = productRepository.findById(productId)
 				.orElseThrow(() -> new ProductNotFoundException("Product not found"));
 
 		Product product = ProductRequestMapper.INSTANCE.toEntity(request);
+		
 		product.setProductId(existingProduct.getProductId());
 		product.setSubcategory(existingProduct.getSubcategory());
 
@@ -322,6 +312,7 @@ public class ProductServiceImpl implements ProductService {
 
 		product.setBrand(existingBrand);
 		product.setColor(existingColor);
+		product.setActive(true);
 
 		List<ProductImage> productImages = existingProduct.getProductImages();
 		product.setProductImages(productImages);
@@ -354,6 +345,24 @@ public class ProductServiceImpl implements ProductService {
 		ProductImage productImage = productImageRepository.findById(imageId).orElseThrow(() -> new ImageNotFoundException("Product image not found"));
 		productImageRepository.deleteById(imageId);
 	}
+	
+	@Override
+	public void changeProductActiveStatus(Long productId) {
+		Product existingProduct = productRepository.findById(productId)
+				.orElseThrow(() -> new ProductNotFoundException("Product not found"));
+		
+		existingProduct.setActive(!existingProduct.getActive());
+		productRepository.save(existingProduct);
+	}
+	
+	@Override
+	public void changeProductImageActiveStatus(Long imageId) {
+		ProductImage existingProductImage = productImageRepository.findById(imageId).orElseThrow(() -> new ImageNotFoundException("Product image not found"));
+		
+		existingProductImage.setActive(!existingProductImage.getActive());
+		productImageRepository.save(existingProductImage);
+	}
+	
 	@Override
 	@Transactional
 	public List<ProductImage> getAllProductImages(Long productId) {

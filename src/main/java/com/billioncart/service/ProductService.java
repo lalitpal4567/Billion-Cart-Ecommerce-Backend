@@ -18,9 +18,7 @@ public interface ProductService {
 	void removeProduct(Long productId);
 	
 	ProductResponse updateProduct(Long productId, ProductRequest request);
-	
-//	Page<ProductResponse> getProductBySubcategoryId(Long subcategoryId, Integer page, Integer size);
-	
+		
 	Page<ProductResponse> getAllProducts(Integer page, Integer size);
 	
 	List<ProductImage> addProductImages(Long productId, List<ImageAltText> altTextList, List<MultipartFile> imageFiles);
@@ -28,6 +26,10 @@ public interface ProductService {
 	void removeProductImageById(Long imageId);
 	
 	List<ProductImage> getAllProductImages(Long productId);
+	
+	void changeProductImageActiveStatus(Long imageId);
+	
+	void changeProductActiveStatus(Long productId);
 	
 	Page<ProductResponse> getProductBySubcategoryId(Long subcategoryId, Integer page, Integer size, List<Long> brandIds, List<Long> colorIds);
 

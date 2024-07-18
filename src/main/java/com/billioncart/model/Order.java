@@ -1,5 +1,6 @@
 package com.billioncart.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.billioncart.audit.UserDateAudit;
@@ -30,7 +31,7 @@ public class Order extends UserDateAudit{
 	public String status;
 	
 	@OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
-	private List<OrderItem> orderItems;
+	private List<OrderItem> orderItems = new ArrayList<>();
 	
 	@OneToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "payment_id")

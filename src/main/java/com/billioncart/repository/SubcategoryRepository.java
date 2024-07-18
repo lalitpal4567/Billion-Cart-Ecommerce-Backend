@@ -11,7 +11,7 @@ import com.billioncart.model.productCatalogue.Category;
 import com.billioncart.model.productCatalogue.Subcategory;
 
 public interface SubcategoryRepository extends JpaRepository<Subcategory, Long>{
-	Optional<Subcategory> findByName(String query);
+	Optional<Subcategory> findByNameIgnoreCase(String query);
 	
 	Page<Subcategory> findAllByNameContaining(String name, Pageable pageable);
 	
@@ -20,5 +20,7 @@ public interface SubcategoryRepository extends JpaRepository<Subcategory, Long>{
 	Page<Subcategory> findAllByCategory(Pageable pageable, Category category);
 	
 	List<Subcategory> findAllByCategory(Category category);
+	
+	List<Subcategory> findByCategoryAndActiveTrue(Category category);
 
 }

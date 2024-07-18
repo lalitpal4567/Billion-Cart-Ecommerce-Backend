@@ -14,8 +14,7 @@ public class ProductRequest {
 	private String details;
 	private Long brandId;
 	private Long colorId;
-	private float currentPrice;
-	private float previousPrice;
+	private float price;
 	private String model;
 	private int quantity;
 	private List<SpecificationValueRequest> specificationValues;

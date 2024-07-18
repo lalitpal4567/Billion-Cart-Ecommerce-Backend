@@ -25,6 +25,7 @@ public interface ProductRepository extends JpaRepository<Product, Long>{
 
     
     @Query("SELECT p FROM Product p WHERE p.subcategory.id = :subcategoryId " +
+    		 "AND p.active = true " +
             "AND (:brandIds IS NULL OR p.brand.id IN :brandIds) " +
             "AND (:colorIds IS NULL OR p.color.id IN :colorIds)")
      Page<Product> findBySubcategoryAndFilters(@Param("subcategoryId") Long subcategoryId,

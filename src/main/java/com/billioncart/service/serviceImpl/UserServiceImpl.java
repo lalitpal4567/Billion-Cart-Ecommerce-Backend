@@ -26,7 +26,6 @@ import com.billioncart.service.UserService;
 public class UserServiceImpl implements UserService{
 	private UserRepository userRepository;
 	private AccountRepository accountRepository;
-    private static final int BUFFER_SIZE = 8192; // Example buffer size
 
 	
 	public UserServiceImpl(UserRepository userRepository, AccountRepository accountRepository) {

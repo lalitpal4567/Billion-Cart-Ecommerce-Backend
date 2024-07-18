@@ -69,7 +69,7 @@ public class SubcategoryServiceImpl implements SubcategoryService {
 		Category existingCategory = categoryRepository.findById(categoryId)
 				.orElseThrow(() -> new ResourceNotFoundException("Category does not exist"));
 
-		Optional<Subcategory> existingSubcategory = subcategoryRepository.findByName(request.getName());
+		Optional<Subcategory> existingSubcategory = subcategoryRepository.findByNameIgnoreCase(request.getName());
 		if (existingSubcategory.isPresent()) {
 			throw new ResourceNotFoundException("Subcategory already exists.");
 		}
@@ -77,6 +77,7 @@ public class SubcategoryServiceImpl implements SubcategoryService {
 		System.out.println("white");
 		Subcategory newSubcategory = SubcategoryRequestMapper.INSTANCE.toEntity(request);
 		newSubcategory.setCategory(existingCategory);
+		newSubcategory.setActive(true);
 
 		System.out.println("blue");
 		List<ImageAltText> altTextList = request.getAltTexts();
@@ -103,6 +104,7 @@ public class SubcategoryServiceImpl implements SubcategoryService {
 			subcategoryImage.setImageUrl(generatedImageUrl);
 			subcategoryImage.setAltText(image.getAltText());
 			subcategoryImage.setSubcategory(newSubcategory);
+			subcategoryImage.setActive(true);
 			return subcategoryImage;
 			
 		}).collect(Collectors.toList());
@@ -190,6 +192,7 @@ public class SubcategoryServiceImpl implements SubcategoryService {
 			subcategoryImage.setImageUrl(generatedImageUrl);
 			subcategoryImage.setAltText(image.getAltText());
 			subcategoryImage.setSubcategory(existingSubcategory);
+			subcategoryImage.setActive(true);
 			return subcategoryImage;
 		}).collect(Collectors.toList());
 		
@@ -224,6 +227,38 @@ public class SubcategoryServiceImpl implements SubcategoryService {
 			return response;
 		});
 		return subcategoryRespPage;
+	}
+	
+	@Override
+	@Transactional
+	public List<SubcategoryResponse> getActiveSubcategoriesByCategoryId(Long categoryId) {
+		Category category = categoryRepository.findById(categoryId)
+				.orElseThrow(() -> new CategoryNotFoundException("Category not found"));
+		List<Subcategory> subcategories = subcategoryRepository.findByCategoryAndActiveTrue(category);
+
+		List<SubcategoryResponse> subcategoryResponsees = subcategories.stream().map(subcat -> {
+			SubcategoryResponse response = SubcategoryResponseMapper.INSTANCE.toPayload(subcat);
+			return response;
+		}).collect(Collectors.toList());
+		
+		return subcategoryResponsees;
+	}
+	
+	@Override
+	public void changeSubcategoryActiveStatus(Long subcategoryId) {
+		Subcategory existingSubcategory = subcategoryRepository.findById(subcategoryId)
+				.orElseThrow(() -> new SubcategoryNotFoundException("Subcategory not found"));
+		
+		existingSubcategory.setActive(!existingSubcategory.getActive());
+		subcategoryRepository.save(existingSubcategory);
+	}
+	
+	@Override
+	public void changeSubcategoryImageActiveStatus(Long imageId) {
+		SubcategoryImage existingSubcategoryImage = subcategoryImageRepository.findById(imageId).orElseThrow(() -> new ImageNotFoundException("Subcategory image not found"));
+		
+		existingSubcategoryImage.setActive(!existingSubcategoryImage.getActive());
+		subcategoryImageRepository.save(existingSubcategoryImage);
 	}
 	
 	@Override

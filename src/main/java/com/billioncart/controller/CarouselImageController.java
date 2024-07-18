@@ -62,13 +62,13 @@ public class CarouselImageController {
 		}
 	}
 	
-	@PatchMapping("/admin/carousel/update-carousel-active/{id}")
-	public ResponseEntity<Map<String, Object>> updateCarouselActiveStatus(@PathVariable(name = "id") Long imageId, @RequestParam(name = "status") Boolean status) {
+	@PatchMapping("/admin/carousel/change-carousel-image-active-status/{id}")
+	public ResponseEntity<Map<String, Object>> updateCarouselImageActiveStatus(@PathVariable(name = "id") Long imageId) {
 		Map<String, Object> res = new LinkedHashMap<>();
 
 		try {
-			carouselImageService.updateActiveStatus(imageId, status);
-			res.put("message", "Carousel image status updated successfully");
+			carouselImageService.changeCarouselImageActiveStatus(imageId);
+			res.put("message", "Carousel image status has been changed successfully");
 			return ResponseEntity.status(HttpStatus.OK).body(res);
 		} catch (Exception e) {
 			res.put("error", e.getMessage());

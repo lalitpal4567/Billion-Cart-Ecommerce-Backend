@@ -1,5 +1,6 @@
 package com.billioncart.model.productCatalogue;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.billioncart.audit.UserDateAudit;
@@ -46,13 +47,13 @@ public class Subcategory extends UserDateAudit{
 	private Category category;
 		
 	@OneToMany(mappedBy = "subcategory", cascade = CascadeType.ALL)
-	private List<SubcategoryImage> subcategoryImages;
+	private List<SubcategoryImage> subcategoryImages = new ArrayList<>();
 	
 	@OneToMany(mappedBy = "subcategory", cascade = CascadeType.ALL)
 	@JsonIgnore
-	private List<Product> products;
+	private List<Product> products = new ArrayList<>();
 	
 	@OneToMany(mappedBy = "subcategory", cascade = CascadeType.ALL)
 	@JsonIgnore
-	private List<SpecificationName> specificationNames;
+	private List<SpecificationName> specificationNames = new ArrayList<>();
 }

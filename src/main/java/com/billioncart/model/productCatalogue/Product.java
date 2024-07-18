@@ -1,5 +1,7 @@
 package com.billioncart.model.productCatalogue;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.billioncart.audit.UserDateAudit;
@@ -26,7 +28,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode(callSuper=false)
+@EqualsAndHashCode(callSuper = false)
 @Data
 @Table(name = "product_table")
 public class Product extends UserDateAudit {
@@ -36,54 +38,57 @@ public class Product extends UserDateAudit {
 
 	@Column(nullable = false)
 	private String name;
-	
-	@Column(nullable = false)
-	private int quantity;
-	
-	@Column(nullable = false)
-	private float currentPrice;
 
 	@Column(nullable = false)
-	private float previousPrice;
-	
+	private int quantity;
+
+	@Column(nullable = false)
+	private float price;
+
 	@Column(nullable = false)
 	private String description;
-	
+
 	@Column(nullable = false)
 	private String details;
-	
+
 	private String model;
-	
+
 	@Column(nullable = false)
 	private Boolean active;
-	
+
+	@Column(name = "offer_percentage")
+	private Float offerPercentage;
+
+	@Column(name = "offer_end_date")
+	private LocalDateTime offerEndDate;
+
 	@ManyToOne
 	@JoinColumn(name = "subcategory_id")
 	private Subcategory subcategory;
-	
-	@OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
-	@JsonIgnore
-	private List<CartItem> cartItems;
-	
-	@OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
-	@JsonIgnore
-	private List<WishlistItem> wishlistItems;
 
 	@OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
 	@JsonIgnore
-	private List<Review> reviews;
+	private List<CartItem> cartItems = new ArrayList<>();
+
+	@OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
+	@JsonIgnore
+	private List<WishlistItem> wishlistItems = new ArrayList<>();
+
+	@OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
+	@JsonIgnore
+	private List<Review> reviews = new ArrayList<>();
 
 	@ManyToOne
 	@JoinColumn(name = "brand_id")
-	 private Brand brand;
-	
+	private Brand brand;
+
 	@ManyToOne
 	@JoinColumn(name = "color_id")
 	private Color color;
-	
+
 	@OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<SpecificationValue> specificationValues;
-	
+	private List<SpecificationValue> specificationValues = new ArrayList<>();
+
 	@OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<ProductImage> productImages;
+	private List<ProductImage> productImages = new ArrayList<>();
 }

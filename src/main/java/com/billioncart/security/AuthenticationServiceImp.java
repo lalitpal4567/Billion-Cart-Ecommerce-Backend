@@ -28,16 +28,14 @@ public class AuthenticationServiceImp implements AuthenticationService {
 	private RoleRepository roleRepository;
 	private AuthenticationManager authenticationManager;
 	private JwtService jwtService;
-	private UserRepository userRepository;
 
 	public AuthenticationServiceImp(AccountRepository accountRepository, PasswordEncoder passwordEncoder,
-			RoleRepository roleRepository, AuthenticationManager authenticationManager, JwtService jwtService, UserRepository userRepository) {
+			RoleRepository roleRepository, AuthenticationManager authenticationManager, JwtService jwtService) {
 		this.accountRepository = accountRepository;
 		this.passwordEncoder = passwordEncoder;
 		this.roleRepository = roleRepository;
 		this.authenticationManager = authenticationManager;
 		this.jwtService = jwtService;
-		this.userRepository = userRepository;
 
 	}
 
@@ -63,8 +61,9 @@ public class AuthenticationServiceImp implements AuthenticationService {
 		Wishlist newWishlist = new Wishlist();
 		
 		userProfile.setCart(newCart);
-		userProfile.setCart(newCart);
 		userProfile.setWishlist(newWishlist);
+		userProfile.setFirstName(request.getFirstName());
+		userProfile.setLastName(request.getLastName());
 		newAccount.setUsername(request.getUsername());
 		newAccount.setPassword(passwordEncoder.encode(request.getPassword()));
 		newAccount.setUser(userProfile);
@@ -78,7 +77,6 @@ public class AuthenticationServiceImp implements AuthenticationService {
 
 		// Save the new account to the repository
 		accountRepository.save(newAccount);
-
 	}
 
 }

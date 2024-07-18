@@ -1,5 +1,6 @@
 package com.billioncart.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.billioncart.audit.UserDateAudit;
@@ -44,6 +45,9 @@ public class Review extends UserDateAudit{
 	@Column(nullable = false)
 	private Integer helpfulCount;
 
+	@Column(nullable = false)
+	private Boolean verifiedPurchase = false;
+	
 	@ManyToOne
 	@JoinColumn(name = "product_id")
 	@JsonIgnore
@@ -54,10 +58,7 @@ public class Review extends UserDateAudit{
 	@JsonIgnore
 	private User user;
 	
-	@Column(nullable = false)
-	private Boolean verifiedPurchase = false;
-	
 	@OneToMany(mappedBy = "review", cascade = CascadeType.ALL)
 	@JsonIgnore
-	private List<ReviewImage> reviewImages;
+	private List<ReviewImage> reviewImages = new ArrayList<>();
 }

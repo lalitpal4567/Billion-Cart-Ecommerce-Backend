@@ -1,5 +1,6 @@
 package com.billioncart.model.productCatalogue;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.billioncart.audit.UserDateAudit;
@@ -28,5 +29,5 @@ public class Color extends UserDateAudit{
 	
 	@OneToMany(mappedBy = "color")
 	@JsonIgnore
-	private List<Product> products;
+	private List<Product> products = new ArrayList<>();
 }

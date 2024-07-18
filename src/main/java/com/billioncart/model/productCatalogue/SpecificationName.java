@@ -1,5 +1,6 @@
 package com.billioncart.model.productCatalogue;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.billioncart.audit.UserDateAudit;
@@ -37,5 +38,5 @@ public class SpecificationName extends UserDateAudit{
 	
 	@OneToMany(mappedBy = "specificationName", cascade = CascadeType.ALL)
 	@JsonIgnore
-	private List<SpecificationValue> specificationValues;
+	private List<SpecificationValue> specificationValues = new ArrayList<>();
 }

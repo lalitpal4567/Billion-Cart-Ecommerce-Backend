@@ -17,6 +17,7 @@ import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 
 import com.billioncart.exception.CarouselImageNotFoundException;
+import com.billioncart.exception.ImageNotFoundException;
 import com.billioncart.exception.ImageUploadException;
 import com.billioncart.exception.SubcategoryNotFoundException;
 import com.billioncart.mapper.CarouselImageRequestMapper;
@@ -88,11 +89,11 @@ public class CarouselImageServiceImpl implements CarouselImageService {
 	}
 	
 	@Override
-	public CarouselImage updateActiveStatus(Long imageId, Boolean active) {
+	public void changeCarouselImageActiveStatus(Long imageId) {
 		CarouselImage carouselImage = carouselImageRepository.findById(imageId)
-				.orElseThrow(() -> new CarouselImageNotFoundException("Image not found"));
-		carouselImage.setActive(active);
-		return carouselImageRepository.save(carouselImage);
+				.orElseThrow(() -> new ImageNotFoundException("Carousel image not found"));
+		carouselImage.setActive(!carouselImage.getActive());
+		carouselImageRepository.save(carouselImage);
 	}
 
 	@Override

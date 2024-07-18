@@ -11,8 +11,8 @@ import com.billioncart.payload.ImageAltText;
 
 public interface CarouselImageService {	
 	List<CarouselImage> addCarouselImage(List<ImageAltText> altTextList, List<MultipartFile> imageFiles);
-	
-	CarouselImage updateActiveStatus(Long imageId, Boolean active);
+		
+	void changeCarouselImageActiveStatus(Long imageId);
 	
 	void removeCarouselImage(Long carouselId);
 	

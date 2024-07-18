@@ -1,6 +1,7 @@
 package com.billioncart.model;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.persistence.CascadeType;
@@ -24,7 +25,7 @@ public class Wishlist{
 	private Long wishlistId;
 	
 	@OneToMany(mappedBy = "wishlist", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<WishlistItem> wishlistItems;
+	private List<WishlistItem> wishlistItems = new ArrayList<>();
 	
 	@Column(name = "created_at")
 	private Timestamp createdAt;

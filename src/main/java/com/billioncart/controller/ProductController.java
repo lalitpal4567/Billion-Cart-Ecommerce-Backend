@@ -110,8 +110,6 @@ public class ProductController {
 	            @RequestParam(name = "brands", required = false) List<Long> brandIds,
 	            @RequestParam(name = "colors", required = false) List<Long> colorIds) {
 		 
-		 System.out.println("lalit pal");
-
 	        return productService.getProductBySubcategoryId(subcategoryId, page, size, brandIds, colorIds);
 	    }
 	
@@ -144,6 +142,34 @@ public class ProductController {
 		try {
 			productService.removeProductImageById(imageId);
 			res.put("message", "Product image removed successfully");
+			return ResponseEntity.status(HttpStatus.OK).body(res);
+		} catch (Exception e) {
+			res.put("error", e.getMessage());
+			return ResponseEntity.status(HttpStatus.OK).body(res);
+		}
+	}
+	
+	@PutMapping("/admin/product/change-product-active-status/{id}")
+	public ResponseEntity<Map<String, Object>> changeProductActiveStatus(@PathVariable(name = "id") Long productId){
+		Map<String, Object> res = new LinkedHashMap<>();
+		
+		try {
+			productService.changeProductActiveStatus(productId);
+			res.put("message", "Product active status has been changed successfully");
+			return ResponseEntity.status(HttpStatus.OK).body(res);
+		} catch (Exception e) {
+			res.put("error", e.getMessage());
+			return ResponseEntity.status(HttpStatus.OK).body(res);
+		}
+	}
+	
+	@PutMapping("/admin/product/change-product-image-active-status/{id}")
+	public ResponseEntity<Map<String, Object>> changeProductImageActiveStatus(@PathVariable(name = "id") Long productId){
+		Map<String, Object> res = new LinkedHashMap<>();
+		
+		try {
+			productService.changeProductImageActiveStatus(productId);
+			res.put("message", "Product image active status has been changed successfully");
 			return ResponseEntity.status(HttpStatus.OK).body(res);
 		} catch (Exception e) {
 			res.put("error", e.getMessage());
