@@ -4,13 +4,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.billioncart.audit.UserDateAudit;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
@@ -27,7 +30,9 @@ public class Order extends UserDateAudit{
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	public Long orderId;
+	
 	public Float totalAmount;
+	
 	public String status;
 	
 	@OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
@@ -37,11 +42,18 @@ public class Order extends UserDateAudit{
 	@JoinColumn(name = "payment_id")
 	private Payment payment;
 	
-	@OneToOne(cascade = CascadeType.ALL)
+	@ManyToOne
 	@JoinColumn(name = "shippingaddress_id")
 	private Address shippingAddress;
 	
-	@OneToOne(cascade = CascadeType.ALL)
+	@ManyToOne
 	@JoinColumn(name = "billingaddress_id")
 	private Address billingAddress;
+	
+	 @ManyToOne
+	 @JoinColumn(name = "user_id")
+	 @JsonIgnore
+	 private User user;
+	 
+	 private String trackingNumber;
 }

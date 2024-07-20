@@ -1,6 +1,7 @@
 package com.billioncart.model;
 
 import com.billioncart.audit.UserDateAudit;
+import com.billioncart.model.productCatalogue.Product;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Entity;
@@ -24,8 +25,18 @@ public class OrderItem extends UserDateAudit{
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long orderitemId;
 
+	private String status;
+	
+	private Integer quantity;
+	
 	@ManyToOne
 	@JoinColumn(name = "order_id")
 	@JsonIgnore
 	private Order order;
+	
+	@ManyToOne
+	@JoinColumn(name = "product_id")
+	@JsonIgnore
+	private Product product;
+	
 }

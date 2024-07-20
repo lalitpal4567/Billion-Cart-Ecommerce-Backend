@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.billioncart.audit.UserDateAudit;
 import com.billioncart.model.CartItem;
+import com.billioncart.model.OrderItem;
 import com.billioncart.model.Review;
 import com.billioncart.model.WishlistItem;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -91,4 +92,9 @@ public class Product extends UserDateAudit {
 
 	@OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<ProductImage> productImages = new ArrayList<>();
+	
+	@OneToMany(mappedBy = "product", cascade = CascadeType.REMOVE)
+	private List<OrderItem> orderItems = new ArrayList<>();
+	
+	
 }

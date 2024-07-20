@@ -19,69 +19,113 @@ import com.billioncart.repository.AddressRepository;
 import com.billioncart.service.AddressService;
 
 @Service
-public class AddressServiceImpl implements AddressService{
+public class AddressServiceImpl implements AddressService {
 	private AddressRepository addressRepository;
 	private AccountRepository accountRepository;
-	
+
 	public AddressServiceImpl(AddressRepository addressRepository, AccountRepository accountRepository) {
 		this.addressRepository = addressRepository;
 		this.accountRepository = accountRepository;
 	}
-	
+
+	@Override
 	public AddressResponse addAddress(AddressRequest request) {
 		String username = UserDetailsUtils.getAuthenticatedUsername();
-		
-		   // find the account by username
-        Account existingAccount = accountRepository.findByUsername(username)
-        		.orElseThrow(() -> new UsernameNotFoundException("Account not found"));        
-        
-        Address newAddress = AddressRequestMapper.INSTANCE.toEntity(request);
-        newAddress.setUser(existingAccount.getUser());
-        newAddress.setIsDefaultAddress(false);
-        Address createdAddress = addressRepository.save(newAddress);
-        
-        return AddressResponseMapper.INSTANCE.toPayload(createdAddress);
+
+		Account existingAccount = accountRepository.findByUsername(username)
+				.orElseThrow(() -> new UsernameNotFoundException("Account not found"));
+
+		Address newAddress = AddressRequestMapper.INSTANCE.toEntity(request);
+		newAddress.setUser(existingAccount.getUser());
+		newAddress.setIsDefaultAddress(false);
+		Address createdAddress = addressRepository.save(newAddress);
+
+		return AddressResponseMapper.INSTANCE.toPayload(createdAddress);
 	}
-	
+
+	@Override
 	@Transactional
 	public void removeAddress(Long addressId) {
 		String username = UserDetailsUtils.getAuthenticatedUsername();
-		
-		 // find the account by username
-        Account existingAccount = accountRepository.findByUsername(username)
-        		.orElseThrow(() -> new UsernameNotFoundException("Account not found"));
-        
-        Address existingAddress = addressRepository.findById(addressId).orElseThrow(() -> new AddressNotFoundException("Address not found"));
-        
-        if(existingAddress.getUser().getUserId() == existingAccount.getUser().getUserId()) {
-        	addressRepository.removeByUserAndAddressId(existingAccount.getUser(), addressId);        	
-        }else {
-        	throw new AddressNotFoundException("Address not found");
-        }
+
+		Account existingAccount = accountRepository.findByUsername(username)
+				.orElseThrow(() -> new UsernameNotFoundException("Account not found"));
+
+		Address existingAddress = addressRepository.findByUserAndAddressId(existingAccount.getUser(), addressId)
+				.orElseThrow(() -> new AddressNotFoundException("Address not found"));
+
+		addressRepository.removeByUserAndAddressId(existingAccount.getUser(), addressId);
+
 	}
-	
+
 	@Override
-	public AddressResponse updateAddress(Long AddressId, AddressRequest request) {
-		Address existingAddress = addressRepository.findById(AddressId).orElseThrow(() -> new AddressNotFoundException("Address not found"));
-		
+	public AddressResponse updateAddress(Long addressId, AddressRequest request) {
+
+		String username = UserDetailsUtils.getAuthenticatedUsername();
+
+		Account existingAccount = accountRepository.findByUsername(username)
+				.orElseThrow(() -> new UsernameNotFoundException("Account not found"));
+
+		Address existingAddress = addressRepository.findByUserAndAddressId(existingAccount.getUser(), addressId)
+				.orElseThrow(() -> new AddressNotFoundException("Address not found"));
+
 		Address address = AddressRequestMapper.INSTANCE.toEntity(request);
 		address.setAddressId(existingAddress.getAddressId());
 		address.setUser(existingAddress.getUser());
-		
+		address.setIsDefaultAddress(false);
+
 		Address updatedAddress = addressRepository.save(address);
 		return AddressResponseMapper.INSTANCE.toPayload(updatedAddress);
 	}
 	
-	@Transactional
 	@Override
-	public List<AddressResponse> getAddressesByUser(){
+	public AddressResponse getUserAddressById(Long addressId) {
 		String username = UserDetailsUtils.getAuthenticatedUsername();
+
+		Account existingAccount = accountRepository.findByUsername(username)
+				.orElseThrow(() -> new UsernameNotFoundException("Account not found"));
+
+		Address existingAddress = addressRepository.findByUserAndAddressId(existingAccount.getUser(), addressId)
+				.orElseThrow(() -> new AddressNotFoundException("Address not found"));
 		
-		Account existingAccount = accountRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("Account not found"));
-		
+		AddressResponse addressResponse = AddressResponseMapper.INSTANCE.toPayload(existingAddress);
+		return addressResponse;
+	}
+
+	@Override
+	public void changeToDefaultAddress(Long addressId) {
+		String username = UserDetailsUtils.getAuthenticatedUsername();
+
+		Account existingAccount = accountRepository.findByUsername(username)
+				.orElseThrow(() -> new UsernameNotFoundException("Account not found"));
+
+        List<Address> addresses = addressRepository.findByUser(existingAccount.getUser());
+        for (Address address : addresses) {
+            if (address.getIsDefaultAddress() != null && address.getIsDefaultAddress()) {
+                address.setIsDefaultAddress(false);
+                addressRepository.save(address);
+            }
+        }
+        
+        Address existingAddress = addressRepository.findByUserAndAddressId(existingAccount.getUser(), addressId)
+        		.orElseThrow(() -> new AddressNotFoundException("Address not found"));
+        
+        existingAddress.setIsDefaultAddress(true);
+        addressRepository.save(existingAddress);
+	}
+	
+	
+	@Override
+	@Transactional
+	public List<AddressResponse> getUserAddress() {
+		String username = UserDetailsUtils.getAuthenticatedUsername();
+
+		Account existingAccount = accountRepository.findByUsername(username)
+				.orElseThrow(() -> new UsernameNotFoundException("Account not found"));
+
 		List<Address> addresses = addressRepository.findAllByUser(existingAccount.getUser());
-		
-		return addresses.stream().map(addr ->{
+
+		return addresses.stream().map(addr -> {
 			AddressResponse response = AddressResponseMapper.INSTANCE.toPayload(addr);
 			return response;
 		}).collect(Collectors.toList());

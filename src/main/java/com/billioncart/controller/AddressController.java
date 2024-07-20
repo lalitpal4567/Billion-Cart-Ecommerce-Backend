@@ -28,7 +28,7 @@ public class AddressController {
 		this.addressService = addressService;
 	}
 	
-	@PostMapping("/add-address")
+	@PostMapping("/address/add-address")
 	public ResponseEntity<Map<String, Object>> addAddress(@RequestBody  AddressRequest request) {
 		Map<String, Object> res = new LinkedHashMap<>();
 
@@ -43,7 +43,7 @@ public class AddressController {
 		}
 	}
 	
-	@DeleteMapping("/remove-address/{id}")
+	@DeleteMapping("/address/remove-address/{id}")
 	public ResponseEntity<Map<String, Object>> removeAddress(@PathVariable(name = "id") Long addressId) {
 		Map<String, Object> res = new LinkedHashMap<>();
 
@@ -57,7 +57,7 @@ public class AddressController {
 		}
 	}
 	
-	@PutMapping("/update-address/{id}")
+	@PutMapping("/address/update-address/{id}")
 	public ResponseEntity<Map<String, Object>> updateAddress(@PathVariable(name = "id") Long addressId, @RequestBody  AddressRequest request) {
 		Map<String, Object> res = new LinkedHashMap<>();
 
@@ -72,12 +72,41 @@ public class AddressController {
 		}
 	}
 	
-	@GetMapping("/addresses")
-	public ResponseEntity<Map<String, Object>> getAddressByUser() {
+	@GetMapping("/address/get-address/{id}")
+	public ResponseEntity<Map<String, Object>> getUserAddressById(@PathVariable(name = "id") Long addressId) {
 		Map<String, Object> res = new LinkedHashMap<>();
 
 		try {
-			List<AddressResponse> addresses = addressService.getAddressesByUser();
+			AddressResponse existingAddress = addressService.getUserAddressById(addressId);
+			res.put("message", "Address found successfully");
+			res.put("Address", existingAddress);
+			return ResponseEntity.status(HttpStatus.OK).body(res);
+		} catch (Exception e) {
+			res.put("error", e.getMessage());
+			return ResponseEntity.status(HttpStatus.OK).body(res);
+		}
+	}
+	
+	@PutMapping("/address/change-default-address/{id}")
+	public ResponseEntity<Map<String, Object>> changeToDefaultAddress(@PathVariable(name = "id") Long addressId) {
+		Map<String, Object> res = new LinkedHashMap<>();
+
+		try {
+			addressService.changeToDefaultAddress(addressId);
+			res.put("message", "Address has been changed to default address");
+			return ResponseEntity.status(HttpStatus.OK).body(res);
+		} catch (Exception e) {
+			res.put("error", e.getMessage());
+			return ResponseEntity.status(HttpStatus.OK).body(res);
+		}
+	}
+	
+	@GetMapping("/address/address-list")
+	public ResponseEntity<Map<String, Object>> getUserAddress() {
+		Map<String, Object> res = new LinkedHashMap<>();
+
+		try {
+			List<AddressResponse> addresses = addressService.getUserAddress();
 			res.put("Address", addresses);
 			return ResponseEntity.status(HttpStatus.OK).body(res);
 		} catch (Exception e) {

@@ -1,5 +1,7 @@
 package com.billioncart.payload;
 
+import java.time.LocalDateTime;
+
 import lombok.Data;
 
 @Data
@@ -14,6 +16,7 @@ public class CartItemResponse {
 	private String color;
 	private Long quantity;
 	private String imageUrl;
-	private float currentPrice;
-	private float previousPrice;
+	private float price;
+	private LocalDateTime offerEndDate;
+	private Float offerPercentage;
 }

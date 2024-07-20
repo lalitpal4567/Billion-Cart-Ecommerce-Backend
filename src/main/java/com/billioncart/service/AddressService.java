@@ -12,5 +12,9 @@ public interface AddressService {
 	
 	AddressResponse updateAddress(Long AddressId, AddressRequest request);
 	
-	List<AddressResponse> getAddressesByUser();
+	public AddressResponse getUserAddressById(Long addressId);
+	
+	void changeToDefaultAddress(Long addressId);
+	
+	List<AddressResponse> getUserAddress();
 }
